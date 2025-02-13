@@ -1,8 +1,0 @@
-﻿numpy
-pandas
-plotly
-protobuf
-requests
-scikit-learn
-streamlit
-streamlit-option-menu
