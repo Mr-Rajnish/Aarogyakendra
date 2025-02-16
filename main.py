@@ -16,7 +16,8 @@ import joblib
 heart_model = joblib.load("model/heart.pkl")  # Correct way to load
 
 diabetes_model = pickle.load(open("model/diabetes.pkl", 'rb'))
-kidney_model = joblib.load("model/kidney.pkl")
+with open("model/kidney.pkl", "rb") as file:
+    loaded_model = pickle.load(file)
 # Add Breast Cancer Model Loading
 breast_cancer_model = pickle.load(open("model/breastcancer.pkl", 'rb'))
 
