@@ -11,8 +11,28 @@ import requests
 # Load models
 maternal_model = pickle.load(open("model/finalized_maternal_model.sav", 'rb'))
 fetal_model = pickle.load(open("model/best_xgboost.pkl", 'rb'))
+import joblib
 
-# Custom CSS for black, white, and neon green color palette
+heart_model = joblib.load("model/heart.pkl")  # Correct way to load
+
+diabetes_model = pickle.load(open("model/diabetes.pkl", 'rb'))
+kidney_model = joblib.load("model/kidney.pkl")
+# Add Breast Cancer Model Loading
+breast_cancer_model = pickle.load(open("model/breastcancer.pkl", 'rb'))
+
+
+
+NewBMI_Overweight = 0
+NewBMI_Underweight = 0
+NewBMI_Obesity_1 = 0
+NewBMI_Obesity_2 = 0
+NewBMI_Obesity_3 = 0
+NewInsulinScore_Normal = 0
+NewGlucose_Low = 0
+NewGlucose_Normal = 0
+NewGlucose_Overweight = 0
+NewGlucose_Secret = 0
+
 # Custom CSS for consistent black, white, and neon green color palette
 st.markdown("""
     <style>
@@ -70,16 +90,20 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Sidebar for navigation
+# Add Breast Cancer Model Loading
+breast_cancer_model = pickle.load(open("model/breastcancer.pkl", 'rb'))
+
+
+# Update Sidebar
 with st.sidebar:
-    st.title("AarogyaGarbha-          Made by Rajnish Singh")
-    st.write("Welcome to AarogyaGarbha")
+    st.title("Aarogyakendra - Made by Rajnish Singh")
+    st.write("Welcome to Aarogya Kendra")
     st.write("Choose an option from the menu below to get started:")
 
     selected = option_menu(
-        'AarogyaGarbha',
-        ['About Us', 'Pregnancy Risk Prediction', 'Fetal Health Prediction', 'Dashboard'],
-        icons=['info-circle', 'heart-pulse', 'heart', 'bar-chart'],  # Added icon for Fetal Health Prediction
+        'AarogyaKendra',
+        ['About AarogyaKendra', 'AarogyaGarbha', 'AarogyaNidhi'],
+        icons=['house', 'info-circle', 'hospital'],
         default_index=0,
         styles={
             "container": {"padding": "5px", "background-color": "black", "border": "2px solid #39FF14"},
@@ -89,12 +113,143 @@ with st.sidebar:
         }
     )
 
-# About Us Page
-if selected == 'About Us':
-    st.title("Welcome to AarogyaGarbha- Made by Rajnish Singh")
+    if selected == 'AarogyaGarbha':
+        selected = option_menu(
+            'AarogyaGarbha',
+            ['About AarogyaGarbha', 'Pregnancy Risk Prediction', 'Fetal Health Prediction', 'Dashboard'],
+            icons=['info-circle', 'heart-pulse', 'heart', 'bar-chart'],
+            default_index=0,
+            styles={
+                "container": {"padding": "5px", "background-color": "black", "border": "2px solid #39FF14"},
+                "icon": {"color": "#39FF14", "font-size": "18px"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "color": "white"},
+                "nav-link-selected": {"background-color": "#39FF14", "color": "black"},
+            }
+        )
+
+    if selected == 'AarogyaNidhi':
+        selected = option_menu(
+            'AarogyaNidhi',
+            ['About AarogyaNidhi', 'Diabetes Prediction', 'Heart Disease Prediction', 'Kidney Disease Prediction', 'Breast Cancer Prediction'],
+            menu_icon='hospital-fill',
+            icons=['info-circle', 'activity', 'heart-pulse', 'person', 'gender-female'],
+            default_index=0,
+            styles={
+                "container": {"padding": "5px", "background-color": "black", "border": "2px solid #39FF14"},
+                "icon": {"color": "#39FF14", "font-size": "18px"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "color": "white"},
+                "nav-link-selected": {"background-color": "#39FF14", "color": "black"},
+            }
+        )
+
+# Landing Page: About AarogyaKendra
+if selected == 'About AarogyaKendra':
+    st.title("Welcome to Aarogyakendra - Made by Rajnish Singh")
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
-            <h3 style='color: white;'>At AarogyaGarbha, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is specifically designed to address the intricate aspects of maternal and fetal health, providing accurate predictions and proactive risk management.</h3>
+            <h4 style='color: white;'>At Aarogyakendra, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is designed to address the intricate aspects of maternal, fetal, heart, kidney, diabetes, and breast cancer health, providing accurate predictions and proactive risk management.</h3>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+
+    st.header("AarogyaGarbha")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <p style='color: white;'>AarogyaGarbha focuses on maternal and fetal health, offering predictive tools to ensure the well-being of both mother and child.</p>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.subheader("1. Pregnancy Risk Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict potential risks during pregnancy by analyzing parameters like age, blood sugar levels, and blood pressure.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.image("graphics/pregnancy_risk_image.jpg", caption="Pregnancy Risk Prediction", use_container_width=True)
+
+    with col2:
+        st.subheader("2. Fetal Health Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Assess the health status of the fetus using advanced algorithms and comprehensive data analysis.</p>
+            </div>
+                    <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/fetal_health_image.jpg", caption="Fetal Health Prediction", use_container_width=True)
+
+    with col3:
+        st.subheader("3. Dashboard Statistics")
+
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Monitor and manage health data with our interactive dashboard, designed for ease of use and accessibility.</p>
+                 <br>
+            </div>
+             <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/dashboardimage.png", caption="Dashboard", use_container_width=True)
+
+    st.header("AarogyaNidhi")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <p style='color: white;'>AarogyaNidhi focuses on predicting and managing chronic diseases like heart disease, kidney disease, diabetes, and breast cancer.</p>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    col3,col4= st.columns(2)
+    with col1:
+        st.subheader("1. Heart Disease Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict the risk of heart disease using parameters like age, blood pressure, and cholesterol levels.</p>
+            </div>
+                <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/heartimage.webp", caption="Heart Disease Prediction", use_container_width=True)
+
+    with col2:
+        st.subheader("2. Kidney Disease Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Assess kidney health by analyzing factors like blood urea, serum creatinine, and more.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.image("graphics/kidneyimage.jpg", caption="Kidney Disease Prediction", use_container_width=True)
+
+    with col3:
+        st.subheader("3. Diabetes Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict diabetes risk using parameters like glucose levels, BMI, and insulin levels.</p>
+            </div>
+                     <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/diabetesimage.jpg", caption="Diabetes Prediction", use_container_width=True)
+
+    with col4:
+        st.subheader("4. Breast Cancer Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict breast cancer risk using parameters like mean radius, mean texture, and mean perimeter.</p>
+            </div>
+                    <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/breastcancer.webp", caption="Breast Cancer Prediction", use_container_width=True)
+
+    st.write("Thank you for choosing Aarogyakendra. We are committed to advancing healthcare through technology and predictive analytics. Feel free to explore our features and take advantage of the insights we provide.")
+
+# Rest of the code remains the same...
+
+if selected == 'About AarogyaGarbha':
+    st.title("Welcome to AarogyaGarbha - Made by Rajnish Singh")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <h3 style='color: white;'>At Aarogyakendra, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is specifically designed to address the intricate aspects of maternal and fetal health, providing accurate predictions and proactive risk management.</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
@@ -124,18 +279,21 @@ if selected == 'About Us':
             <p style='color: white;'>Our Dashboard provides a user-friendly interface for monitoring and managing health data. It offers a holistic view of predictive analyses, allowing healthcare professionals and users to make informed decisions. The Dashboard is designed for ease of use and accessibility.</p>
         </div>
     """, unsafe_allow_html=True)
+    st.image("graphics/dashboardimage.png", caption="Dashboard", use_container_width=True)
 
     st.write("Thank you for choosing AarogyaGarbha. We are committed to advancing healthcare through technology and predictive analytics. Feel free to explore our features and take advantage of the insights we provide.")
+
 
 # Pregnancy Risk Prediction Page
 if selected == 'Pregnancy Risk Prediction':
     st.title('Pregnancy Risk Prediction')
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
-            <h3 style='color: white;'>Predicting the risk in pregnancy involves analyzing several parameters, including age, blood sugar levels, blood pressure, and other relevant factors. By evaluating these parameters, we can assess potential risks and make informed predictions regarding the pregnancy's health.</h3>
+            <h4 style='color: white;'>Predicting the risk in pregnancy involves analyzing several parameters, including age, blood sugar levels, blood pressure, and other relevant factors. By evaluating these parameters, we can assess potential risks and make informed predictions regarding the pregnancy's health.</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
+    st.image("graphics/pregnancy_risk_image.jpg", caption="Pregnancy Risk Prediction", use_container_width=True)
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -175,10 +333,11 @@ if selected == 'Fetal Health Prediction':
     st.title('Fetal Health Prediction')
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
-            <h3 style='color: white;'>Cardiotocograms (CTGs) are a simple and cost-accessible option to assess fetal health, allowing healthcare professionals to take action to prevent child and maternal mortality.</h3>
+            <h4 style='color: white;'>Cardiotocograms (CTGs) are a simple and cost-accessible option to assess fetal health, allowing healthcare professionals to take action to prevent child and maternal mortality.</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
+    st.image("graphics/fetal_health_image.jpg", caption="Fetal Health Prediction", use_container_width=True)
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -291,6 +450,7 @@ if selected == "Dashboard":
         </div>
         </br>
     """, unsafe_allow_html=True)
+    st.image("graphics/dashboardimage.png", caption="Dashboard", use_container_width=True)
 
     # Initialize Dashboard
     dashboard = MaternalHealthDashboard(api_endpoint)
@@ -298,7 +458,7 @@ if selected == "Dashboard":
     # Bubble Chart
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
-            <h3 style='color: #39FF14;'>Bubble Chart: Regional Performance</h3>
+            <h4 style='color: #39FF14;'>Bubble Chart: Regional Performance</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
@@ -324,7 +484,7 @@ if selected == "Dashboard":
     # Pie Chart
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
-            <h3 style='color: #39FF14;'>Pie Chart: Regional Distribution</h3>
+            <h4 style='color: #39FF14;'>Pie Chart: Regional Distribution</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
@@ -346,3 +506,400 @@ if selected == "Dashboard":
         """, unsafe_allow_html=True)
         pie_chart_data = dashboard.get_pie_graph_data()
         st.markdown(f"<div style='color: white;'>{pie_chart_data}</div>", unsafe_allow_html=True)
+
+if selected == 'About AarogyaNidhi':
+    st.title("Welcome to AarogyaNidhi - Made by Rajnish Singh")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <h4 style='color: white;'>At AarogyaNidhi, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is specifically designed to address the intricate aspects of heart, kidney, and diabetes and Breast health, providing accurate predictions and proactive risk management.</h3>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    col3,col4= st.columns(2)
+    with col1:
+        st.subheader("1. Heart Disease Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict the risk of heart disease using parameters like age, blood pressure, and cholesterol levels.</p>
+            </div>
+                <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/heartimage.webp", caption="Heart Disease Prediction", use_container_width=True)
+
+    with col2:
+        st.subheader("2. Kidney Disease Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Assess kidney health by analyzing factors like blood urea, serum creatinine, and more.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.image("graphics/kidneyimage.jpg", caption="Kidney Disease Prediction", use_container_width=True)
+
+    with col3:
+        st.subheader("3. Diabetes Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict diabetes risk using parameters like glucose levels, BMI, and insulin levels.</p>
+            </div>
+                     <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/diabetesimage.jpg", caption="Diabetes Prediction", use_container_width=True)
+
+    with col4:
+        st.subheader("4. Breast Cancer Prediction")
+        st.markdown("""
+            <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+                <p style='color: white;'>Predict breast cancer risk using parameters like mean radius, mean texture, and mean perimeter.</p>
+            </div>
+             <br>
+        """, unsafe_allow_html=True)
+        st.image("graphics/breastcancer.webp", caption="Breast Cancer Prediction", use_container_width=True)
+
+
+    st.write("Thank you for choosing AarogyaNidhi. We are committed to advancing healthcare through technology and predictive analytics. Feel free to explore our features and take advantage of the insights we provide.")
+
+if selected == 'Diabetes Prediction':
+    st.title("Diabetes Prediction Using Machine Learning")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <h4 style='color: white;'>Predicting diabetes involves analyzing several parameters, including age, blood sugar levels, blood pressure, and other relevant factors. By evaluating these parameters, we can assess potential risks and make informed predictions regarding diabetes.</h3>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+    st.image("graphics/diabetesimage.jpg", caption="Diabetes Prediction", use_container_width=True)
+
+    # Load the trained model and scaler
+    with open("model/scalerdiabetes.pkl", "rb") as scaler_file:
+        scaler3 = pickle.load(scaler_file)
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        Pregnancies = st.text_input("Number of Pregnancies", "0")
+    with col2:
+        Glucose = st.text_input("Glucose Level", "0")
+    with col3:
+        BloodPressure = st.text_input("BloodPressure Value", "0")
+    with col1:
+        SkinThickness = st.text_input("SkinThickness Value", "0")
+    with col2:
+        Insulin = st.text_input("Insulin Value", "0")
+    with col3:
+        BMI = st.text_input("BMI Value", "0")
+    with col1:
+        DiabetesPedigreeFunction = st.text_input("DiabetesPedigreeFunction Value", "0")
+    with col2:
+        Age = st.text_input("Age", "0")
+
+
+
+    if st.button("Diabetes Test Result"):
+        try:
+            # Convert inputs to float
+            Pregnancies = float(Pregnancies)
+            Glucose = float(Glucose)
+            BloodPressure = float(BloodPressure)
+            SkinThickness = float(SkinThickness)
+            Insulin = float(Insulin)
+            BMI = float(BMI)
+            DiabetesPedigreeFunction = float(DiabetesPedigreeFunction)
+            Age = float(Age)
+
+            # One-hot encoding for BMI categories
+            NewBMI_Underweight = 1 if BMI <= 18.5 else 0
+            NewBMI_Overweight = 1 if 24.9 < BMI <= 29.9 else 0
+            NewBMI_Obesity_1 = 1 if 29.9 < BMI <= 34.9 else 0
+            NewBMI_Obesity_2 = 1 if 34.9 < BMI <= 39.9 else 0
+            NewBMI_Obesity_3 = 1 if BMI > 39.9 else 0
+
+            # One-hot encoding for Insulin categories
+            NewInsulinScore_Normal = 1 if 16 <= Insulin <= 166 else 0
+
+            # One-hot encoding for Glucose categories
+            NewGlucose_Low = 1 if Glucose <= 70 else 0
+            NewGlucose_Normal = 1 if 70 < Glucose <= 99 else 0
+            NewGlucose_Overweight = 1 if 99 < Glucose <= 126 else 0
+            NewGlucose_Secret = 1 if Glucose > 126 else 0
+
+            # Combine all features
+            user_input = np.array([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin,
+                                   BMI, DiabetesPedigreeFunction, Age, NewBMI_Underweight,
+                                   NewBMI_Overweight, NewBMI_Obesity_1, NewBMI_Obesity_2, 
+                                   NewBMI_Obesity_3, NewInsulinScore_Normal, NewGlucose_Low, 
+                                   NewGlucose_Normal, NewGlucose_Overweight, NewGlucose_Secret]).reshape(1, -1)
+
+            # Scale the input
+            user_input_scaled = scaler3.transform(user_input)
+
+            proba = diabetes_model.predict_proba(user_input_scaled)[0][1]  # Probability of diabetes
+            threshold = 0.7  # Adjust if needed
+
+            if proba >= threshold:
+                 st.error(" 🔴 The person has diabetes. Consult a doctor!!")
+            else:
+                 st.success(" 🟢 The person does not have diabetes.")
+
+        
+        except ValueError:
+            st.error("Please enter valid numerical values for all fields.")
+
+    
+
+if "selected" in locals() and selected == "Heart Disease Prediction":
+    st.title("Heart Disease Prediction Using Machine Learning")
+    st.markdown(
+        """
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #FF5733;'>
+            <h4 style='color: white;'>Heart disease prediction analyzes multiple health parameters such as age, blood pressure, cholesterol levels, and more to assess the risk of cardiovascular issues.</h4>
+        </div>
+        </br>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.image("graphics/heartimage.webp", caption="Heart Disease Prediction", use_container_width=True)
+
+    # Input Fields for Heart Disease Prediction
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        age = st.text_input("Age")
+        sex = st.text_input("Sex (0 = Female, 1 = Male)")
+        cp = st.text_input("Chest Pain Type (0-3)")
+        trestbps = st.text_input("Resting Blood Pressure")
+        chol = st.text_input("Serum Cholesterol")
+    with col2:
+        fbs = st.text_input("Fasting Blood Sugar (0 = False, 1 = True)")
+        restecg = st.text_input("Resting ECG Results (0-2)")
+        thalach = st.text_input("Max Heart Rate Achieved")
+        exang = st.text_input("Exercise-Induced Angina(0 =No, 1 =Yes)") 
+    with col3:
+        oldpeak = st.text_input("ST Depression Induced by Exercise")
+        slope = st.text_input("Slope of Peak Exercise ST Segment (0-2)")
+        ca = st.text_input("Number of Major Vessels (0-4)")
+        thal = st.text_input("Thalassemia (0-3)")
+
+    # Prediction Logic
+    if st.button("Predict Heart Disease Risk"):
+        try:
+            # Prepare input data (No Scaling)
+            input_data = [
+                float(age), float(sex), float(cp), float(trestbps), float(chol),
+                float(fbs), float(restecg), float(thalach), float(exang),
+                float(oldpeak), float(slope), float(ca), float(thal)
+            ]
+
+            # Convert input data to numpy array and reshape
+            input_data_as_numpy_array = np.asarray(input_data)
+            input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
+
+            # Make prediction without scaling
+            prediction = heart_model.predict(input_data_reshaped)[0]
+            prediction = 1 - prediction  # Reverse prediction like Jupyter Notebook
+
+            # Display result with correct labeling
+            if prediction == 1:
+                st.error("🔴 High Risk of Heart Disease! Consult a Doctor Immediately.")
+            else:
+                st.success("🟢 Low Risk of Heart Disease.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
+    if st.button("Clear", key="clear_heart_disease"):
+        st.rerun()
+
+
+if selected == 'Kidney Disease Prediction':
+    st.title("Kidney Disease Prediction using ML")
+    st.markdown("""
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <h4 style='color: white;'>Predicting kidney disease involves analyzing several parameters, including age, blood pressure, blood urea, serum creatinine, and other relevant factors. By evaluating these parameters, we can assess potential risks and make informed predictions regarding kidney disease.</h3>
+        </div>
+        </br>
+    """, unsafe_allow_html=True)
+    st.image("graphics/kidneyimage.jpg", caption="Kidney Disease Prediction", use_container_width=True)
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        age = st.text_input('Age')
+
+    with col2:
+        blood_pressure = st.text_input('Blood Pressure')
+
+    with col3:
+        specific_gravity = st.text_input('Specific Gravity')
+
+    with col4:
+        albumin = st.text_input('Albumin')
+
+    with col5:
+        sugar = st.text_input('Sugar')
+
+    with col1:
+        red_blood_cells = st.text_input('Red Blood Cell')
+
+    with col2:
+        pus_cell = st.text_input('Pus Cell')
+
+    with col3:
+        pus_cell_clumps = st.text_input('Pus Cell Clumps')
+
+    with col4:
+        bacteria = st.text_input('Bacteria')
+
+    with col5:
+        blood_glucose_random = st.text_input('Blood Glucose Random')
+
+    with col1:
+        blood_urea = st.text_input('Blood Urea')
+
+    with col2:
+        serum_creatinine = st.text_input('Serum Creatinine')
+
+    with col3:
+        sodium = st.text_input('Sodium')
+
+    with col4:
+        potassium = st.text_input('Potassium')
+
+    with col5:
+        haemoglobin = st.text_input('Haemoglobin')
+
+    with col1:
+        packed_cell_volume = st.text_input('Packet Cell Volume')
+
+    with col2:
+        white_blood_cell_count = st.text_input('White Blood Cell Count')
+
+    with col3:
+        red_blood_cell_count = st.text_input('Red Blood Cell Count')
+
+    with col4:
+        hypertension = st.text_input('Hypertension')
+
+    with col5:
+        diabetes_mellitus = st.text_input('Diabetes Mellitus')
+
+    with col1:
+        coronary_artery_disease = st.text_input('Coronary Artery Disease')
+
+    with col2:
+        appetite = st.text_input('Appetitte')
+
+    with col3:
+        peda_edema = st.text_input('Peda Edema')
+    with col4:
+        aanemia = st.text_input('Aanemia')
+
+   
+    if st.button("Kidney's Test Result"):
+        user_input = [age, blood_pressure, specific_gravity, albumin, sugar,
+                    red_blood_cells, pus_cell, pus_cell_clumps, bacteria,
+                    blood_glucose_random, blood_urea, serum_creatinine, sodium,
+                    potassium, haemoglobin, packed_cell_volume,
+                    white_blood_cell_count, red_blood_cell_count, hypertension,
+                    diabetes_mellitus, coronary_artery_disease, appetite,
+                    peda_edema, aanemia]
+
+        # Convert input values to float
+        user_input = [float(x) for x in user_input]
+        
+     
+
+        # Make prediction
+        prediction = kidney_model.predict([user_input])
+
+        #reverse
+        pred=1-prediction
+
+        if pred[0] == 1:
+           st.error("The person has Kidney's disease")
+        else:
+            st.success("The person does not have Kidney's disease")
+
+    
+
+
+
+# Add Breast Cancer Prediction Page
+if "selected" in locals() and selected == "Breast Cancer Prediction":
+    st.title("Breast Cancer Prediction Using Machine Learning")
+    st.markdown(
+        """
+        <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
+            <h4 style='color: white;'>Predicting breast cancer involves analyzing several parameters, including mean radius, mean texture, mean perimeter, and other relevant factors. By evaluating these parameters, we can assess potential risks and make informed predictions regarding breast cancer.</h4>
+        </div>
+        </br>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.image("graphics/breastcancer.webp", caption="Breast Cancer Prediction", use_container_width=True)
+
+    # Input Fields for Breast Cancer Prediction
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        mean_radius = st.text_input("Mean Radius")
+        mean_texture = st.text_input("Mean Texture")
+        mean_perimeter = st.text_input("Mean Perimeter")
+        mean_area = st.text_input("Mean Area")
+        mean_smoothness = st.text_input("Mean Smoothness")
+        mean_compactness = st.text_input("Mean Compactness")
+        mean_concavity = st.text_input("Mean Concavity")
+        mean_concave_points = st.text_input("Mean Concave Points")
+        mean_symmetry = st.text_input("Mean Symmetry")
+        mean_fractal_dimension = st.text_input("Mean Fractal Dimension")
+    with col2:
+        radius_error = st.text_input("Radius Error")
+        texture_error = st.text_input("Texture Error")
+        perimeter_error = st.text_input("Perimeter Error")
+        area_error = st.text_input("Area Error")
+        smoothness_error = st.text_input("Smoothness Error")
+        compactness_error = st.text_input("Compactness Error")
+        concavity_error = st.text_input("Concavity Error")
+        concave_points_error = st.text_input("Concave Points Error")
+        symmetry_error = st.text_input("Symmetry Error")
+        fractal_dimension_error = st.text_input("Fractal Dimension Error")
+    with col3:
+        worst_radius = st.text_input("Worst Radius")
+        worst_texture = st.text_input("Worst Texture")
+        worst_perimeter = st.text_input("Worst Perimeter")
+        worst_area = st.text_input("Worst Area")
+        worst_smoothness = st.text_input("Worst Smoothness")
+        worst_compactness = st.text_input("Worst Compactness")
+        worst_concavity = st.text_input("Worst Concavity")
+        worst_concave_points = st.text_input("Worst Concave Points")
+        worst_symmetry = st.text_input("Worst Symmetry")
+        worst_fractal_dimension = st.text_input("Worst Fractal Dimension")
+
+    # Prediction Logic
+    if st.button("Predict Breast Cancer Risk"):
+        try:
+            # Prepare input data without scaling
+            input_data = [
+                float(mean_radius), float(mean_texture), float(mean_perimeter), float(mean_area),
+                float(mean_smoothness), float(mean_compactness), float(mean_concavity), float(mean_concave_points),
+                float(mean_symmetry), float(mean_fractal_dimension), float(radius_error), float(texture_error),
+                float(perimeter_error), float(area_error), float(smoothness_error), float(compactness_error),
+                float(concavity_error), float(concave_points_error), float(symmetry_error), float(fractal_dimension_error),
+                float(worst_radius), float(worst_texture), float(worst_perimeter), float(worst_area),
+                float(worst_smoothness), float(worst_compactness), float(worst_concavity), float(worst_concave_points),
+                float(worst_symmetry), float(worst_fractal_dimension)
+            ]
+
+            # Convert input data to numpy array and reshape
+            input_data_as_numpy_array = np.asarray(input_data)
+            input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
+
+            # Make prediction without scaling
+            prediction = breast_cancer_model.predict(input_data_reshaped)
+
+            # Display result
+            if prediction[0] == 0:
+                st.error("🔴 Breast Cancer Risk Detected! Consult a Doctor.")
+            else:
+                st.success("🟢 No Risk of Breast Cancer.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
+    if st.button("Clear", key="clear_breast_cancer"):
+        st.rerun()
