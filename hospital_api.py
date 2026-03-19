@@ -75,27 +75,27 @@ def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
 # 🏥 MAIN FUNCTION
 # =========================
 def find_hospitals(
-    disease: str,
-    location_city: str,
-    lat: Optional[float] = None,
-    lon: Optional[float] = None,
-    limit: int = 5,
-    radius_km: float = 100,
-    use_dataset_fallback: bool = True,
-) -> Tuple[List[Dict], str]:
+    disease,
+    location_city,
+    lat=None,
+    lon=None,
+    limit=5,
+    radius_km=100,
+    use_dataset_fallback=True,
+):
 
-    # 🔥 IMPORTANT: DO NOT USE IP LOCATION
+    # ✅ SAFE LOCATION HANDLING
     if lat is None or lon is None:
-        print("⚠️ No GPS location provided → using Jaipur fallback")
+        print("⚠️ No GPS → fallback Jaipur")
         lat, lon = 26.9124, 75.7873
 
-    print("📍 Final Location:", lat, lon)
+    print("📍 Using Location:", lat, lon)
 
     hospitals = fetch_hospitals_geoapify(lat, lon, radius_km, limit)
 
-    if hospitals:
-        return hospitals, "Geoapify"
+    if hospitals and len(hospitals) > 0:
+        return hospitals[:limit], "Geoapify"
 
-    print("⚠️ No hospitals found from API")
+    print("⚠️ No hospitals found")
 
     return [], "no-data"
