@@ -33,6 +33,19 @@ NewGlucose_Normal = 0
 NewGlucose_Overweight = 0
 NewGlucose_Secret = 0
 
+from streamlit_geolocation import streamlit_geolocation
+
+# Get user's real location
+location = streamlit_geolocation()
+
+if location and location.get("latitude"):
+    lat = location["latitude"]
+    lon = location["longitude"]
+    st.success(f"📍 Location detected: {lat}, {lon}")
+else:
+    lat, lon = 26.9124, 75.7873  # fallback Jaipur
+    st.warning("Using default location (Jaipur)")
+
 # Custom CSS for consistent black, white, and neon green color palette
 st.markdown("""
     <style>
@@ -1108,7 +1121,7 @@ if selected == 'Aarogya Sathi':
             with st.spinner("Finding nearby hospitals..."):
                 hospitals, source = find_hospitals(
                     disease=top_disease,
-                    location_city=city,
+                    location_city="auto",
                     lat=None,
                     lon=None,
                     limit=5,

@@ -1,25 +1,7 @@
 import requests
 import os
 import math
-from typing import List, Dict, Tuple
-
-
-# =========================
-# 📍 GET LOCATION
-# =========================
-def get_ip_location():
-    try:
-        res = requests.get("http://ip-api.com/json/", timeout=10)
-        data = res.json()
-
-        return {
-            "city": data.get("city", "Jaipur"),
-            "lat": data.get("lat"),
-            "lon": data.get("lon"),
-        }
-
-    except:
-        return {"city": "Jaipur", "lat": 26.9124, "lon": 75.7873}
+from typing import List, Dict, Tuple, Optional
 
 
 # =========================
@@ -47,13 +29,13 @@ def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
     API_KEY = os.getenv("GEOAPIFY_API_KEY")
 
     if not API_KEY:
-        print("❌ No Geoapify API key")
+        print("❌ Missing GEOAPIFY_API_KEY")
         return []
 
     try:
         url = (
             f"https://api.geoapify.com/v2/places?"
-            f"categories=healthcare.hospital"
+            f"categories=healthcare.hospital,healthcare.clinic"
             f"&filter=circle:{lon},{lat},{radius_km * 1000}"
             f"&limit={limit}"
             f"&apiKey={API_KEY}"
@@ -79,10 +61,13 @@ def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
                     "distance_km": round(dist, 2)
                 })
 
-        return sorted(hospitals, key=lambda x: x["distance_km"])
+        hospitals = sorted(hospitals, key=lambda x: x["distance_km"])
+
+        print("✅ Hospitals found:", len(hospitals))
+        return hospitals[:limit]
 
     except Exception as e:
-        print("Geoapify error:", e)
+        print("❌ Geoapify error:", e)
         return []
 
 
@@ -90,29 +75,27 @@ def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
 # 🏥 MAIN FUNCTION
 # =========================
 def find_hospitals(
-    disease,
-    location_city,
-    lat=None,
-    lon=None,
-    limit=5,
-    radius_km=100,
-    use_dataset_fallback=True,
-):
+    disease: str,
+    location_city: str,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    limit: int = 5,
+    radius_km: float = 100,
+    use_dataset_fallback: bool = True,
+) -> Tuple[List[Dict], str]:
 
+    # 🔥 IMPORTANT: DO NOT USE IP LOCATION
     if lat is None or lon is None:
-        loc = get_ip_location()
-        lat = loc["lat"]
-        lon = loc["lon"]
-        location_city = loc["city"]
+        print("⚠️ No GPS location provided → using Jaipur fallback")
+        lat, lon = 26.9124, 75.7873
 
-    print("📍 Location:", location_city, lat, lon)
+    print("📍 Final Location:", lat, lon)
 
     hospitals = fetch_hospitals_geoapify(lat, lon, radius_km, limit)
 
     if hospitals:
-        print("✅ Geoapify hospitals:", len(hospitals))
-        return hospitals[:limit], "Geoapify"
+        return hospitals, "Geoapify"
 
-    print("⚠️ API failed")
+    print("⚠️ No hospitals found from API")
 
     return [], "no-data"

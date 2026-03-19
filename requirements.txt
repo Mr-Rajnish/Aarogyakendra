@@ -11,3 +11,4 @@ requests
 streamlit-option-menu
 PyPDF2
 reportlab
+streamlit-geolocation
