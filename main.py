@@ -1113,9 +1113,11 @@ if selected == 'Aarogya Sathi':
         should_fetch = True
 
     if should_fetch and st.session_state.latest_assessment is not None:
-        if "user_location" not in st.session_state:
-          st.session_state.user_location = {"city": "auto"}
-        key = f"{top_disease}::{city}"
+         
+        city="auto"
+        key = f"{top_disease}::{lat:.2f},{lon:.2f}"
+
+        
         if st.session_state.last_hospitals_key != key:
             with st.spinner("Finding nearby hospitals..."):
                 hospitals, source = find_hospitals(
