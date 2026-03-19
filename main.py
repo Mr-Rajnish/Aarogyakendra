@@ -16,8 +16,7 @@ import joblib
 heart_model = joblib.load("model/heart.pkl")  # Correct way to load
 
 diabetes_model = pickle.load(open("model/diabetes.pkl", 'rb'))
-with open("model/kidney.pkl", "rb") as file:
-    kidney_model = pickle.load(file)
+kidney_model=pickle.load(open("model/kidney.pkl",'rb'))
 # Add Breast Cancer Model Loading
 breast_cancer_model = pickle.load(open("model/breastcancer.pkl", 'rb'))
 
@@ -94,17 +93,21 @@ st.markdown("""
 # Add Breast Cancer Model Loading
 breast_cancer_model = pickle.load(open("model/breastcancer.pkl", 'rb'))
 
+# Routing helper for "Aarogya Sathi" section button on landing page.
+if "force_assistant" not in st.session_state:
+    st.session_state.force_assistant = False
+
 
 # Update Sidebar
 with st.sidebar:
-    st.title("Aarogyakendra - Made by Rajnish Singh")
+    st.title("Aarogyakendra⚕️")
     st.write("Welcome to Aarogya Kendra")
     st.write("Choose an option from the menu below to get started:")
 
     selected = option_menu(
         'AarogyaKendra',
-        ['About AarogyaKendra', 'AarogyaGarbha', 'AarogyaNidhi'],
-        icons=['house', 'info-circle', 'hospital'],
+        ['About AarogyaKendra', 'Aarogya Sathi', 'AarogyaGarbha', 'AarogyaNidhi'],
+        icons=['house', 'heart-pulse', 'info-circle', 'hospital'],
         default_index=0,
         styles={
             "container": {"padding": "5px", "background-color": "black", "border": "2px solid #39FF14"},
@@ -143,15 +146,58 @@ with st.sidebar:
             }
         )
 
+if st.session_state.get("force_assistant", False):
+    selected = "Aarogya Sathi"
+    st.session_state.force_assistant = False
+
 # Landing Page: About AarogyaKendra
 if selected == 'About AarogyaKendra':
-    st.title("Welcome to Aarogyakendra - Made by Rajnish Singh")
+    st.title("Welcome to Aarogyakendra")
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
             <h4 style='color: white;'>At Aarogyakendra, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is designed to address the intricate aspects of maternal, fetal, heart, kidney, diabetes, and breast cancer health, providing accurate predictions and proactive risk management.</h3>
         </div>
         </br>
     """, unsafe_allow_html=True)
+
+    st.header("Aarogya Sathi")
+    st.markdown(
+        """
+        <div style='background-color: black; padding: 20px; border-radius: 12px; border: 2px solid #39FF14;'>
+            <p style='color: #0FA3B1; font-size: 18px; font-weight: bold;'>AI Healthcare Assistant (Triage + Reports)</p>
+            <p style='color: white; font-size: 15px; line-height: 1.6; margin-bottom: 0px;'>
+                Upload your report (PDF/CSV) or type symptoms. Aarogya Sathi suggests possible conditions (not a diagnosis),
+                precautions, lifestyle changes, medication ideas with doctor disclaimer, and nearby hospital recommendations.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col_s1, col_s2 = st.columns([1, 1.25])
+    with col_s1:
+        watermark_src = r"C:\Users\rajni\.cursor\projects\c-Users-rajni-Desktop-AarogyaKendra\assets\c__Users_rajni_AppData_Roaming_Cursor_User_workspaceStorage_718ed68f3d3577cdadb8bea5cd8cf437_images_image-1d1d14fd-b6d9-440e-b772-e27a35bd26d9.png"
+        st.image(watermark_src, use_container_width=True, caption="Medical Symbol")
+
+    with col_s2:
+        st.markdown(
+            """
+            <div style='background-color: black; padding: 18px; border-radius: 12px; border: 1px solid #0FA3B1;'>
+                <p style='color: white; font-size: 15px; line-height: 1.8;'>
+                    <b>Features</b><br/>
+                    • Chat-style symptom analysis<br/>
+                    • PDF/CSV report parsing (BP, glucose, etc.)<br/>
+                    • Hospital recommendations using live OSM API<br/>
+                    • Medical-style PDF report download
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if st.button("Open Aarogya Sathi", key="open_sathi_landing"):
+            st.session_state.force_assistant = True
+            st.rerun()
 
     st.header("AarogyaGarbha")
     st.markdown("""
@@ -247,7 +293,7 @@ if selected == 'About AarogyaKendra':
 # Rest of the code remains the same...
 
 if selected == 'About AarogyaGarbha':
-    st.title("Welcome to AarogyaGarbha - Made by Rajnish Singh")
+    st.title("Welcome to AarogyaGarbha")
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
             <h3 style='color: white;'>At Aarogyakendra, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is specifically designed to address the intricate aspects of maternal and fetal health, providing accurate predictions and proactive risk management.</h3>
@@ -509,7 +555,7 @@ if selected == "Dashboard":
         st.markdown(f"<div style='color: white;'>{pie_chart_data}</div>", unsafe_allow_html=True)
 
 if selected == 'About AarogyaNidhi':
-    st.title("Welcome to AarogyaNidhi - Made by Rajnish Singh")
+    st.title("Welcome to AarogyaNidhi")
     st.markdown("""
         <div style='background-color: black; padding: 20px; border-radius: 10px; border: 2px solid #39FF14;'>
             <h4 style='color: white;'>At AarogyaNidhi, our mission is to revolutionize healthcare by offering innovative solutions through predictive analysis. Our platform is specifically designed to address the intricate aspects of heart, kidney, and diabetes and Breast health, providing accurate predictions and proactive risk management.</h3>
@@ -904,3 +950,218 @@ if "selected" in locals() and selected == "Breast Cancer Prediction":
 
     if st.button("Clear", key="clear_breast_cancer"):
         st.rerun()
+
+
+# ---------------- Aarogya Sathi ----------------
+if selected == 'Aarogya Sathi':
+    from chatbot import assessment_to_chat_markdown, generate_health_assessment
+    from hospital_api import find_hospitals, get_ip_location
+    from pdf_generator import generate_health_report_pdf
+    from report_parser import prepare_report_context
+
+    import datetime
+    import os
+
+    # Auto-set token in code (as requested). You can rotate/revoke this token from HF settings.
+    
+
+    st.markdown(
+        """
+        <style>
+        .aarsathi-wrap h1, .aarsathi-wrap h2, .aarsathi-wrap h3 { color: #0FA3B1; }
+        .aarsathi-pill { border: 1px solid #0FA3B1; background: rgba(15,163,177,0.08); padding: 6px 10px; border-radius: 999px; display: inline-block; margin: 4px 0; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.title("Aarogya Sathi")
+    st.caption(
+        "This is an AI-based system and not a substitute for professional medical advice."
+    )
+
+    # Session state initialization
+    if "ai_chat_history" not in st.session_state:
+        st.session_state.ai_chat_history = []
+    if "uploaded_report_text" not in st.session_state:
+        st.session_state.uploaded_report_text = None
+    if "uploaded_report_summary" not in st.session_state:
+        st.session_state.uploaded_report_summary = ""
+    if "uploaded_report_values" not in st.session_state:
+        st.session_state.uploaded_report_values = {}
+    if "latest_assessment" not in st.session_state:
+        st.session_state.latest_assessment = None
+    if "last_user_input" not in st.session_state:
+        st.session_state.last_user_input = ""
+    if "latest_hospitals" not in st.session_state:
+        st.session_state.latest_hospitals = []
+    if "last_hospitals_key" not in st.session_state:
+        st.session_state.last_hospitals_key = None
+    if "user_location" not in st.session_state:
+        st.session_state.user_location = get_ip_location()
+    if "pdf_bytes" not in st.session_state:
+        st.session_state.pdf_bytes = None
+    if "pdf_filename" not in st.session_state:
+        st.session_state.pdf_filename = None
+    # Display only runtime status instead of token setup prompts.
+    st.caption("HF API token status: detected")
+
+    # ---------------- Chat ----------------
+    st.subheader("Chat (Symptoms + Report Analysis)")
+
+    for msg in st.session_state.ai_chat_history:
+        role = msg.get("role", "assistant")
+        content = msg.get("content", "")
+        with st.chat_message(role):
+            st.markdown(content)
+
+    user_prompt = st.chat_input("Describe your symptoms or health concerns...")
+    if user_prompt:
+        st.session_state.last_user_input = user_prompt
+        st.session_state.pdf_bytes = None
+        st.session_state.pdf_filename = None
+        st.session_state.latest_assessment = None
+
+        st.session_state.ai_chat_history.append({"role": "user", "content": user_prompt})
+        with st.chat_message("user"):
+            st.markdown(user_prompt)
+
+        # Combine uploaded report context (if available) + chat input.
+        report_text = st.session_state.uploaded_report_text
+        chat_context = st.session_state.ai_chat_history[:-1]  # include previous messages only
+
+        with st.chat_message("assistant"):
+            with st.spinner("Analyzing symptoms and report (if provided)..."):
+                assessment = generate_health_assessment(
+                    symptoms_text=user_prompt,
+                    report_text=report_text,
+                    
+                )
+                st.session_state.latest_assessment = assessment
+
+                md = assessment_to_chat_markdown(assessment)
+                st.markdown(md)
+                model_used = assessment.get("model_used")
+                if model_used:
+                    st.caption(f"AI model status: {model_used}")
+                # Show a hint when fallback is used (common when token/API fails).
+                if model_used == "fallback":
+                    err_details = assessment.get("error_details") or []
+                    st.warning(
+                        "AI model was not reachable or did not return parseable JSON. "
+                        "You are seeing fallback guidance."
+                    )
+                    if err_details:
+                        with st.expander("Debug details"):
+                            st.write(err_details)
+
+        st.session_state.ai_chat_history.append({"role": "assistant", "content": md})
+
+    # ---------------- Upload Report ----------------
+    st.subheader("Upload Report")
+
+    uploaded = st.file_uploader("Upload PDF or CSV", type=["pdf", "csv"])
+    if uploaded is not None:
+        file_bytes = uploaded.getvalue()
+        summary, extracted_text, values = prepare_report_context(file_bytes, uploaded.name)
+
+        st.session_state.uploaded_report_text = extracted_text
+        st.session_state.uploaded_report_summary = summary
+        st.session_state.uploaded_report_values = values
+
+        with st.expander("Extracted report summary"):
+            st.write(summary)
+
+    if st.session_state.uploaded_report_text and st.session_state.last_user_input and st.session_state.latest_assessment is None:
+        st.info("Your uploaded report will be used automatically in the next chat message.")
+
+    # ---------------- Recommendations ----------------
+    st.subheader("Recommendations")
+
+    ask_hospitals = None
+    if st.session_state.latest_assessment is not None:
+        ask_hospitals = st.radio(
+            "Do you want hospital recommendations?",
+            options=["No", "Yes"],
+            index=0,
+            horizontal=False,
+        )
+
+    disease_candidates = []
+    if st.session_state.latest_assessment is not None:
+        disease_candidates = st.session_state.latest_assessment.get("diseases") or []
+
+    top_disease = disease_candidates[0] if disease_candidates else "General consultation"
+
+    find_btn = st.button("Find Nearby Hospitals")
+
+    should_fetch = False
+    if ask_hospitals == "Yes":
+        should_fetch = True
+    if find_btn:
+        should_fetch = True
+
+    if should_fetch and st.session_state.latest_assessment is not None:
+        city = st.session_state.user_location.get("city") or "Unknown"
+        key = f"{top_disease}::{city}"
+        if st.session_state.last_hospitals_key != key:
+            with st.spinner("Finding nearby hospitals..."):
+                hospitals, source = find_hospitals(
+                    disease=top_disease,
+                    location_city=city,
+                    lat=st.session_state.user_location.get("lat"),
+                    lon=st.session_state.user_location.get("lon"),
+                    limit=5
+                )
+                st.session_state.latest_hospitals = hospitals
+                st.session_state.last_hospitals_key = key
+            st.caption(f"Hospital source: {source} (showing up to 5 within 100 km)")
+
+    if st.session_state.latest_hospitals:
+        # Show a compact table
+        rows = []
+        for h in st.session_state.latest_hospitals:
+            rows.append(
+                {
+                    "Name": h.get("name"),
+                    "Address": h.get("address", ""),
+                    "Distance (km)": (
+                        None if h.get("distance_km") is None else round(float(h["distance_km"]), 2)
+                    ),
+                }
+            )
+        st.table(pd.DataFrame(rows))
+        if len(st.session_state.latest_hospitals) < 5:
+            st.info(
+                f"Only {len(st.session_state.latest_hospitals)} hospitals were found within 100 km for this city/disease query."
+            )
+    else:
+        st.write("No hospitals returned from API yet. Try changing disease query or location.")
+
+    # ---------------- Download PDF ----------------
+    st.subheader("Download PDF")
+    if st.button("Generate Report"):
+        if st.session_state.latest_assessment is None:
+            st.warning("Please chat with the AI first to generate an assessment.")
+        else:
+            patient_input = st.session_state.last_user_input or ""
+            uploaded_summary = st.session_state.uploaded_report_summary or ""
+
+            pdf_bytes = generate_health_report_pdf(
+                patient_input=patient_input,
+                uploaded_report_summary=uploaded_summary,
+                assessment=st.session_state.latest_assessment,
+                hospitals=st.session_state.latest_hospitals,
+            )
+
+            st.session_state.pdf_bytes = pdf_bytes
+            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            st.session_state.pdf_filename = f"aarogyakendra_ai_report_{ts}.pdf"
+
+    if st.session_state.pdf_bytes:
+        st.download_button(
+            label="Download PDF Report",
+            data=st.session_state.pdf_bytes,
+            file_name=st.session_state.pdf_filename,
+            mime="application/pdf",
+        )
