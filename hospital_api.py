@@ -83,19 +83,96 @@ def find_hospitals(
     radius_km=100,
     use_dataset_fallback=True,
 ):
+    import os
+    import requests
 
-    # ✅ SAFE LOCATION HANDLING
+    # ✅ fallback location
     if lat is None or lon is None:
-        print("⚠️ No GPS → fallback Jaipur")
-        lat, lon = 26.9124, 75.7873
+        lat, lon = 26.9124, 75.7873  # Jaipur fallback
 
-    print("📍 Using Location:", lat, lon)
+    print("📍 Location:", lat, lon)
 
-    hospitals = fetch_hospitals_geoapify(lat, lon, radius_km, limit)
+    hospitals = []
 
-    if hospitals and len(hospitals) > 0:
-        return hospitals[:limit], "Geoapify"
+    # =========================
+    # 🔥 1. GEOAPIFY API
+    # =========================
+    try:
+        API_KEY = os.getenv("GEOAPIFY_API_KEY")
 
-    print("⚠️ No hospitals found")
+        if API_KEY:
+            url = (
+                f"https://api.geoapify.com/v2/places?"
+                f"categories=healthcare.hospital"
+                f"&filter=circle:{lon},{lat},{radius_km * 1000}"
+                f"&limit={limit}"
+                f"&apiKey={API_KEY}"
+            )
 
-    return [], "no-data"
+            res = requests.get(url, timeout=10)
+            data = res.json()
+
+            for item in data.get("features", []):
+                props = item.get("properties", {})
+
+                hospitals.append({
+                    "name": props.get("name", "Hospital"),
+                    "address": props.get("formatted", "Address not available"),
+                    "distance_km": round(props.get("distance", 0) / 1000, 2)
+                })
+
+            if hospitals:
+                print("✅ Geoapify success")
+                return hospitals[:limit], "Geoapify"
+
+    except Exception as e:
+        print("Geoapify failed:", e)
+
+    # =========================
+    # 🔥 2. OVERPASS API (backup)
+    # =========================
+    try:
+        query = f"""
+        [out:json];
+        node["amenity"="hospital"](around:{radius_km*1000},{lat},{lon});
+        out;
+        """
+
+        res = requests.post(
+            "https://overpass-api.de/api/interpreter",
+            data={"data": query},
+            timeout=20
+        )
+
+        data = res.json()
+
+        for el in data.get("elements", []):
+            name = el.get("tags", {}).get("name", "Hospital")
+
+            hospitals.append({
+                "name": name,
+                "address": "Nearby hospital",
+                "distance_km": 0.0
+            })
+
+        if hospitals:
+            print("✅ Overpass success")
+            return hospitals[:limit], "Overpass"
+
+    except Exception as e:
+        print("Overpass failed:", e)
+
+    # =========================
+    # 🔥 3. FINAL FALLBACK (STATIC)
+    # =========================
+    print("⚠️ Using fallback hospitals")
+
+    fallback = [
+        {"name": "AIIMS Hospital", "address": "New Delhi", "distance_km": 5.0},
+        {"name": "Fortis Hospital", "address": "Jaipur", "distance_km": 8.0},
+        {"name": "Apollo Hospital", "address": "Delhi", "distance_km": 10.0},
+        {"name": "Manipal Hospital", "address": "Jaipur", "distance_km": 12.0},
+        {"name": "Sawai Man Singh Hospital", "address": "Jaipur", "distance_km": 3.0},
+    ]
+
+    return fallback[:limit], "fallback"
