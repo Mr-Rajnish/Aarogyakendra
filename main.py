@@ -1010,8 +1010,6 @@ if selected == 'Aarogya Sathi':
         st.session_state.latest_hospitals = []
     if "last_hospitals_key" not in st.session_state:
         st.session_state.last_hospitals_key = None
-    if "user_location" not in st.session_state:
-        st.session_state.user_location = get_ip_location()
     if "pdf_bytes" not in st.session_state:
         st.session_state.pdf_bytes = None
     if "pdf_filename" not in st.session_state:
