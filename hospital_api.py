@@ -111,12 +111,14 @@ def fetch_hospitals(lat, lon, radius_km=100, limit=5):
 # 🏥 MAIN FUNCTION
 # =========================
 def find_hospitals(
-    disease=None,
-    location_city=None,
+    disease,
+    location_city,
     lat=None,
     lon=None,
-    limit=5
-) -> Tuple[List[Dict], str]:
+    limit=5,
+    radius_km=100,
+    use_dataset_fallback=True
+):
 
     if lat is None or lon is None:
         loc = get_ip_location()
@@ -124,8 +126,17 @@ def find_hospitals(
         lon = loc["lon"]
         location_city = loc["city"]
 
-    print(f"📍 Location: {location_city}")
+    print("📍 Location:", location_city, lat, lon)
 
-    hospitals = fetch_hospitals(lat, lon, limit=limit)
+    hospitals = fetch_hospitals(lat, lon, radius_km)
 
-    return hospitals, "API"
+    if hospitals:
+        return hospitals[:limit], "API"
+
+    print("⚠️ API failed")
+
+    if use_dataset_fallback:
+        fallback = fallback_csv(lat, lon)
+        return fallback[:limit], "CSV"
+
+    return [], "no-data"
