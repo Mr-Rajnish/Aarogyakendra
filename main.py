@@ -176,7 +176,7 @@ if selected == 'About AarogyaKendra':
 
     col_s1, col_s2 = st.columns([1, 1.25])
     with col_s1:
-        watermark_src = r"C:\Users\rajni\.cursor\projects\c-Users-rajni-Desktop-AarogyaKendra\assets\c__Users_rajni_AppData_Roaming_Cursor_User_workspaceStorage_718ed68f3d3577cdadb8bea5cd8cf437_images_image-1d1d14fd-b6d9-440e-b772-e27a35bd26d9.png"
+        watermark_src = r"C:\Users\rajni\.cursor\projects\c-Users-rajni-Desktop-AarogyaKendra\graphics\symbolmed.svg"
         st.image(watermark_src, use_container_width=True, caption="Medical Symbol")
 
     with col_s2:
