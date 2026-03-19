@@ -1,49 +1,16 @@
-import csv
-import math
-import os
-from typing import Dict, List, Optional, Tuple
-
 import requests
-
-def fallback_csv(lat, lon):
-    file = os.path.join(os.path.dirname(__file__), "hospitals.csv")
-
-    if not os.path.exists(file):
-        print("❌ hospitals.csv not found")
-        return []
-
-    results = []
-
-    with open(file, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-
-        for row in reader:
-            try:
-                h_lat = float(row.get("lat", 0))
-                h_lon = float(row.get("lon", 0))
-            except:
-                continue
-
-            dist = haversine(lat, lon, h_lat, h_lon)
-
-            results.append({
-                "name": row.get("name", "Hospital"),
-                "address": row.get("address", "Not available"),
-                "distance_km": round(dist, 2)
-            })
-
-    results = sorted(results, key=lambda x: x["distance_km"])
-
-    return results[:5]
+import os
+import math
+from typing import List, Dict, Tuple
 
 
 # =========================
-# 📍 LOCATION
+# 📍 GET LOCATION
 # =========================
 def get_ip_location():
     try:
-        r = requests.get("http://ip-api.com/json/")
-        data = r.json()
+        res = requests.get("http://ip-api.com/json/", timeout=10)
+        data = res.json()
 
         return {
             "city": data.get("city", "Jaipur"),
@@ -52,11 +19,7 @@ def get_ip_location():
         }
 
     except:
-        return {
-            "city": "Jaipur",
-            "lat": 26.9124,
-            "lon": 75.7873
-        }
+        return {"city": "Jaipur", "lat": 26.9124, "lon": 75.7873}
 
 
 # =========================
@@ -64,77 +27,62 @@ def get_ip_location():
 # =========================
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371
-
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
 
     a = (
-        math.sin(dlat / 2) ** 2 +
-        math.cos(math.radians(lat1)) *
-        math.cos(math.radians(lat2)) *
-        math.sin(dlon / 2) ** 2
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
     )
 
     return 2 * R * math.asin(math.sqrt(a))
 
 
 # =========================
-# 🌍 FETCH HOSPITALS
+# 🌍 GEOAPIFY API
 # =========================
-def fetch_hospitals(lat, lon, radius_km=100, limit=5):
-    try:
-        query = f"""
-        [out:json];
-        node["amenity"="hospital"](around:{radius_km*1000},{lat},{lon});
-        out;
-        """
+def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
+    API_KEY = os.getenv("GEOAPIFY_API_KEY")
 
-        res = requests.post(
-            "https://overpass-api.de/api/interpreter",
-            data={"data": query},
-            timeout=60
+    if not API_KEY:
+        print("❌ No Geoapify API key")
+        return []
+
+    try:
+        url = (
+            f"https://api.geoapify.com/v2/places?"
+            f"categories=healthcare.hospital"
+            f"&filter=circle:{lon},{lat},{radius_km * 1000}"
+            f"&limit={limit}"
+            f"&apiKey={API_KEY}"
         )
 
+        res = requests.get(url, timeout=15)
         data = res.json()
 
         hospitals = []
 
-        for el in data.get("elements", []):
-            tags = el.get("tags", {})
+        for item in data.get("features", []):
+            props = item.get("properties", {})
 
-            name = tags.get("name", "Hospital")
-
-            # 🔥 FIX ADDRESS
-            address = tags.get("addr:full")
-
-            if not address:
-                street = tags.get("addr:street", "")
-                city = tags.get("addr:city", "")
-                address = f"{street}, {city}" if street else "Address not available"
-
-            h_lat = el.get("lat")
-            h_lon = el.get("lon")
+            h_lat = props.get("lat")
+            h_lon = props.get("lon")
 
             if h_lat and h_lon:
                 dist = haversine(lat, lon, h_lat, h_lon)
 
-                # 🔥 FIX DISTANCE FORMAT
-                distance = f"{int(dist*1000)} meters" if dist < 1 else f"{round(dist,2)} km"
-
                 hospitals.append({
-                    "name": name,
-                    "address": address,
-                    "distance": distance
+                    "name": props.get("name", "Hospital"),
+                    "address": props.get("formatted", "Address not available"),
+                    "distance_km": round(dist, 2)
                 })
 
-        hospitals = sorted(hospitals, key=lambda x: x["distance"])
-
-        print(f"✅ Found {len(hospitals)} hospitals")
-
-        return hospitals[:limit]
+        return sorted(hospitals, key=lambda x: x["distance_km"])
 
     except Exception as e:
-        print("API Error:", e)
+        print("Geoapify error:", e)
         return []
 
 
@@ -148,7 +96,7 @@ def find_hospitals(
     lon=None,
     limit=5,
     radius_km=100,
-    use_dataset_fallback=True
+    use_dataset_fallback=True,
 ):
 
     if lat is None or lon is None:
@@ -159,15 +107,12 @@ def find_hospitals(
 
     print("📍 Location:", location_city, lat, lon)
 
-    hospitals = fetch_hospitals(lat, lon, radius_km)
+    hospitals = fetch_hospitals_geoapify(lat, lon, radius_km, limit)
 
     if hospitals:
-        return hospitals[:limit], "API"
+        print("✅ Geoapify hospitals:", len(hospitals))
+        return hospitals[:limit], "Geoapify"
 
     print("⚠️ API failed")
-
-    if use_dataset_fallback:
-        fallback = fallback_csv(lat, lon)
-        return fallback[:limit], "CSV"
 
     return [], "no-data"
