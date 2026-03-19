@@ -1109,14 +1109,9 @@ if selected == 'Aarogya Sathi':
                 hospitals, source = find_hospitals(
                     disease=top_disease,
                     location_city=city,
-                    # lat=st.session_state.user_location.get("lat"),
-                    # lon=st.session_state.user_location.get("lon"),
-                   
-                    location_city,
                     lat=None,
                     lon=None,
                     limit=5,
-
                     radius_km=100.0,
                     use_dataset_fallback=True
                 )
