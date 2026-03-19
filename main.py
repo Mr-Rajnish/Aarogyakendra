@@ -176,8 +176,8 @@ if selected == 'About AarogyaKendra':
 
     col_s1, col_s2 = st.columns([1, 1.25])
     with col_s1:
-        watermark_src = r"C:\Users\rajni\.cursor\projects\c-Users-rajni-Desktop-AarogyaKendra\graphics\medsymbol.png"
-        st.image(watermark_src, use_container_width=True, caption="Medical Symbol")
+      
+        st.image("graphics/medsymbol.png", use_container_width=True, caption="Medical Symbol")
 
     with col_s2:
         st.markdown(
