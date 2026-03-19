@@ -53,13 +53,14 @@ def fetch_hospitals_geoapify(lat, lon, radius_km=100, limit=5):
             h_lon = props.get("lon")
 
             if h_lat and h_lon:
-                dist = haversine(lat, lon, h_lat, h_lon)
-
-                hospitals.append({
+                 dist = haversine(lat, lon, h_lat, h_lon)
+            else :
+                 dist=None 
+            hospitals.append({
                     "name": props.get("name", "Hospital"),
                     "address": props.get("formatted", "Address not available"),
                     "distance_km": round(dist, 2)
-                })
+            })
 
         hospitals = sorted(hospitals, key=lambda x: x["distance_km"])
 
