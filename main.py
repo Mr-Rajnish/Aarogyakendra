@@ -963,7 +963,7 @@ if selected == 'Aarogya Sathi':
     import os
 
     # Auto-set token in code (as requested). You can rotate/revoke this token from HF settings.
-    
+   
 
     st.markdown(
         """
@@ -1111,7 +1111,9 @@ if selected == 'Aarogya Sathi':
                     location_city=city,
                     lat=st.session_state.user_location.get("lat"),
                     lon=st.session_state.user_location.get("lon"),
-                    limit=5
+                    limit=5,
+                    radius_km=100.0,
+                    use_dataset_fallback=True
                 )
                 st.session_state.latest_hospitals = hospitals
                 st.session_state.last_hospitals_key = key
