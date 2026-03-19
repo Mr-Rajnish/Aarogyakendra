@@ -5,6 +5,37 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
+def fallback_csv(lat, lon):
+    file = os.path.join(os.path.dirname(__file__), "hospitals.csv")
+
+    if not os.path.exists(file):
+        print("❌ hospitals.csv not found")
+        return []
+
+    results = []
+
+    with open(file, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+
+        for row in reader:
+            try:
+                h_lat = float(row.get("lat", 0))
+                h_lon = float(row.get("lon", 0))
+            except:
+                continue
+
+            dist = haversine(lat, lon, h_lat, h_lon)
+
+            results.append({
+                "name": row.get("name", "Hospital"),
+                "address": row.get("address", "Not available"),
+                "distance_km": round(dist, 2)
+            })
+
+    results = sorted(results, key=lambda x: x["distance_km"])
+
+    return results[:5]
+
 
 # =========================
 # 📍 LOCATION
